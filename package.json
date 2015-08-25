@@ -1,0 +1,29 @@
+{
+    "name" : "adverb-signals",
+    "description" : "An event system based on JS-Signals.",
+    "keywords" : ["js-signals", "signals", "pub/sub", "event", "publish", "subscribe", "observer", "adverb"],
+    "homepage" : "https://github.com/sholladay/adverb-signals",
+    "version" : "0.1.0",
+    "main" : "dist/signals.js",
+    "author" : {
+        "name" : "Seth Holladay",
+        "url"  : "http://seth-holladay.com"
+    },
+    "repository" : {
+        "type" : "git",
+        "url": "git@github.com:sholladay/adverb-signals.git"
+    },
+    "bugs" : {
+        "url" : "https://github.com/sholladay/adverb-signals/issues"
+    },
+    "devDependencies" : {
+        "jasmine-node" : "^1.14.5"
+    },
+    "scripts" : {
+        "test" : "jasmine-node test/spec"
+    },
+    "directories" : {
+        "doc" : "./dist/docs"
+    },
+    "license": "MIT"
+}

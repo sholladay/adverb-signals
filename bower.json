@@ -1,0 +1,33 @@
+{
+  "name": "adverb-signals",
+  "version": "0.1.0",
+  "homepage": "http://millermedeiros.github.com/js-signals/",
+  "authors": [
+    "millermedeiros <miller@millermedeiros.com>",
+    "Seth Holladay"
+  ],
+  "description": "An event system based on JS-Signals.",
+  "main": "dist/signals.js",
+  "keywords": [
+    "signal",
+    "signals",
+    "event",
+    "emitter",
+    "pub/sub",
+    "observer",
+    "adverb"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "build",
+    "src",
+    "build.xml",
+    "package.json",
+    "updateDocs.sh"
+  ]
+}
