@@ -17,7 +17,7 @@ The version numbers adhere to [Semantic Versioning](http://semver.org/) and are 
 ### Changed
  -
 
-## 1.0.0 - 2015-08-25
+## [1.0.0] - 2015-08-25
 ### Changed
  - APIs are now named as intended for this project.
  -- `dispatch()` becomes `emit()`
@@ -32,4 +32,5 @@ The version numbers adhere to [Semantic Versioning](http://semver.org/) and are 
  - All of the original files from [JS-Signals], upon which this is based, with minor modifications to the metadata to indicate that this is a different package.
 
 
-[Unreleased]:      https://github.com/sholladay/adverb-signals/compare/v0.1.0...HEAD
+[Unreleased]:      https://github.com/sholladay/adverb-signals/compare/v1.0.0...HEAD
+[1.0.0]:           https://github.com/sholladay/adverb-signals/compare/v0.1.0...v1.0.0
