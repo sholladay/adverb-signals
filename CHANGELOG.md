@@ -1,4 +1,4 @@
-# Change Log for Adverb-Signals
+# Change Log for [Adverb-Signals](https://github.com/sholladay/adverb-signals)
 All notable changes to this project are documented here, under these categories.
  - **Added**      : New functionality or something very noteworthy.
  - **Changed**    : Updates to an existing system or feature.
@@ -16,6 +16,16 @@ The version numbers adhere to [Semantic Versioning](http://semver.org/) and are 
 ## [Unreleased]
 ### Changed
  -
+
+## 1.0.0 - 2015-08-25
+### Changed
+ - APIs are now named as intended for this project.
+ -- `dispatch()` becomes `emit()`
+ -- `add()` becomes `always()`
+ -- `addOnce()` becomes `once()`
+ -- `remove()` becomes `never()`
+ -- `removeAll()` becomes `neverAny()`
+ - For consistency with other methods, `runs()` (formerly known as `has()`) now asserts that its `listener` argument is a function, throwing if that is not the case.
 
 ## 0.1.0 - 2015-08-24
 ### Added

@@ -12,22 +12,22 @@ describe('Memorize', function () {
     // ---
 
 
-    it('should memorize previously dispatched value and automatically execute handler on add/addOnce', function () {
+    it('should memorize previously emited value and automatically execute handler on always/once', function () {
        var s = this.signal;
        s.memorize = true;
        var count = 0;
 
        var ts1 = +(new Date());
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect( a ).toBe( 'foo' );
            expect( b ).toBe( ts1 );
        });
 
-       s.dispatch('foo', ts1);
+       s.emit('foo', ts1);
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect( a ).toBe( 'foo' );
            expect( b ).toBe( ts1 );
@@ -35,9 +35,9 @@ describe('Memorize', function () {
 
        var ts2 = +(new Date());
 
-       s.dispatch('bar', ts2);
+       s.emit('bar', ts2);
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect( a ).toBe( 'bar' );
            expect( b ).toBe( ts2 );
@@ -54,15 +54,15 @@ describe('Memorize', function () {
 
        var ts1 = +(new Date());
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect( a ).toBe( 'foo' );
            expect( b ).toBe( ts1 );
        });
 
-       s.dispatch('foo', ts1);
+       s.emit('foo', ts1);
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect( a ).toBe( 'foo' );
            expect( b ).toBe( ts1 );
@@ -70,10 +70,10 @@ describe('Memorize', function () {
 
        var ts2 = +(new Date());
 
-       s.dispatch('bar', ts2);
+       s.emit('bar', ts2);
        s.forget();
 
-       s.addOnce(function(a, b){
+       s.once(function(a, b){
            count++;
            expect(null).toEqual('fail: ');
        });

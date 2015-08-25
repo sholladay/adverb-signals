@@ -11,7 +11,7 @@ describe('Remove', function () {
     // ---
 
 
-    describe('remove()', function () {
+    describe('never()', function () {
 
         it('should remove listener and update bindings', function () {
             var s = this.signal;
@@ -19,62 +19,62 @@ describe('Remove', function () {
             var l1 = function(){expect(null).toEqual('fail: ');};
             var l2 = function(){expect(null).toEqual('fail: ');};
 
-            var b1 = s.add(l1);
-            var b2 = s.add(l2);
-            s.remove(l1);
+            var b1 = s.always(l1);
+            var b2 = s.always(l2);
+            s.never(l1);
             expect( s.getNumListeners() ).toBe( 1 );
             expect( b1.listener ).toBeUndefined();
             expect( b1.getListener() ).toBeUndefined();
             expect( b1.context ).toBeUndefined();
 
-            s.remove(l2);
+            s.never(l2);
             expect( s.getNumListeners() ).toBe( 0 );
             expect( b2.listener ).toBeUndefined();
             expect( b2.getListener() ).toBeUndefined();
             expect( b2.context ).toBeUndefined();
 
             expect( s.getNumListeners() ).toBe( 0 );
-            s.dispatch();
+            s.emit();
         });
 
 
         it('should not fail if called twice in a row', function () {
             var s = this.signal;
             var l = function(){expect(null).toEqual('fail: ');};
-            s.add(l);
-            s.remove(l);
-            s.remove(l);
+            s.always(l);
+            s.never(l);
+            s.never(l);
             expect( s.getNumListeners() ).toBe( 0 );
-            s.dispatch();
+            s.emit();
         });
 
 
         it('should throw error if trying to remove a listener that isn\'t a function', function () {
             var s = this.signal;
             var l1 = function(){expect(null).toEqual('fail: ');};
-            var b1 = s.add(l1);
-            expect( function(){ s.remove() } ).toThrow( 'listener is a required param of remove() and should be a Function.' );
-            expect( function(){ s.remove(123) } ).toThrow( 'listener is a required param of remove() and should be a Function.' );
-            expect( function(){ s.remove(true) } ).toThrow( 'listener is a required param of remove() and should be a Function.' );
-            expect( function(){ s.remove('bar') } ).toThrow( 'listener is a required param of remove() and should be a Function.' );
+            var b1 = s.always(l1);
+            expect( function(){ s.never() } ).toThrow( 'listener is a required param of never() and should be a Function.' );
+            expect( function(){ s.never(123) } ).toThrow( 'listener is a required param of never() and should be a Function.' );
+            expect( function(){ s.never(true) } ).toThrow( 'listener is a required param of never() and should be a Function.' );
+            expect( function(){ s.never('bar') } ).toThrow( 'listener is a required param of never() and should be a Function.' );
             expect( s.getNumListeners() ).toBe( 1 );
         });
 
     });
 
 
-    describe('removeAll()', function () {
+    describe('neverAny()', function () {
         it('should remove all listeners', function () {
             var s = this.signal;
 
-            var b1 = s.add(function(){expect(null).toEqual('fail: ')});
-            var b2 = s.add(function(){expect(null).toEqual('fail: ')});
-            var b3 = s.addOnce(function(){expect(null).toEqual('fail: ')});
-            var b4 = s.add(function(){expect(null).toEqual('fail: ')});
-            var b5 = s.addOnce(function(){expect(null).toEqual('fail: ')});
+            var b1 = s.always(function(){expect(null).toEqual('fail: ')});
+            var b2 = s.always(function(){expect(null).toEqual('fail: ')});
+            var b3 = s.once(function(){expect(null).toEqual('fail: ')});
+            var b4 = s.always(function(){expect(null).toEqual('fail: ')});
+            var b5 = s.once(function(){expect(null).toEqual('fail: ')});
 
             expect( s.getNumListeners() ).toBe( 5 );
-            s.removeAll();
+            s.neverAny();
             expect( s.getNumListeners() ).toBe( 0 );
 
             expect( b1.listener ).toBeUndefined();
@@ -97,8 +97,8 @@ describe('Remove', function () {
             expect( b5.getListener() ).toBeUndefined();
             expect( b5.context ).toBeUndefined();
 
-            s.dispatch();
-            s.removeAll();
+            s.emit();
+            s.neverAny();
             expect( s.getNumListeners() ).toBe( 0 );
         });
     });
@@ -112,8 +112,8 @@ describe('Remove', function () {
             var l1 = function(){expect(null).toEqual('fail: ');};
             var obj = {};
 
-            var b1 = s.add(l1);
-            var b2 = s.add(l1, obj);
+            var b1 = s.always(l1);
+            var b2 = s.always(l1, obj);
             expect( s.getNumListeners() ).toBe( 2 );
 
             expect( b1.context ).toBeUndefined();
@@ -121,7 +121,7 @@ describe('Remove', function () {
             expect( b2.context ).toBe( obj );
             expect( b2.getListener() ).toBe( l1 );
 
-            s.remove(l1, obj);
+            s.never(l1, obj);
 
             expect( b2.context ).toBeUndefined();
             expect( b2.getListener() ).toBeUndefined();
@@ -130,9 +130,9 @@ describe('Remove', function () {
             expect( b1.getListener() ).toBe( l1 );
 
             expect( s.getNumListeners() ).toBe( 1 );
-            s.remove(l1);
+            s.never(l1);
             expect( s.getNumListeners() ).toBe( 0 );
-            s.dispatch();
+            s.emit();
         });
 
     });

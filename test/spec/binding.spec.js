@@ -10,14 +10,14 @@ describe('SignalBinding', function () {
 
 
 
-    describe('add/addOnce', function () {
+    describe('add/once', function () {
 
-        describe('addOnce', function () {
+        describe('once', function () {
 
             it('should return a binding and isOnce() should be true', function () {
                 var s = this.signal;
-                var b1 = s.addOnce(function(){});
-                var b2 = s.addOnce(function(){});
+                var b1 = s.once(function(){});
+                var b2 = s.once(function(){});
                 expect( s.getNumListeners() ).toBe( 2 );
                 expect( b1.isOnce() ).toBe( true );
                 expect( b2.isOnce() ).toBe( true );
@@ -28,8 +28,8 @@ describe('SignalBinding', function () {
             it('should return same binding if trying to add same listener twice', function () {
                 var s = this.signal;
                 var l = function(){};
-                var b1 = s.addOnce(l);
-                var b2 = s.addOnce(l);
+                var b1 = s.once(l);
+                var b2 = s.once(l);
                 expect( s.getNumListeners() ).toBe( 1 );
                 expect( b1.isOnce() ).toBe( true );
                 expect( b2.isOnce() ).toBe( true );
@@ -38,12 +38,12 @@ describe('SignalBinding', function () {
         });
 
 
-        describe('add', function () {
+        describe('always', function () {
 
             it('should return binding and isOnce() should be false', function () {
                 var s = this.signal;
-                var b1 = s.add(function(){});
-                var b2 = s.add(function(){});
+                var b1 = s.always(function(){});
+                var b2 = s.always(function(){});
                 expect( s.getNumListeners() ).toBe( 2 );
                 expect( b1.isOnce() ).toBe( false );
                 expect( b2.isOnce() ).toBe( false );
@@ -53,8 +53,8 @@ describe('SignalBinding', function () {
             it('should return same binding if adding same listener twice', function () {
                 var s = this.signal;
                 var l = function(){};
-                var b1 = s.add(l);
-                var b2 = s.add(l);
+                var b1 = s.always(l);
+                var b2 = s.always(l);
                 expect( s.getNumListeners() ).toBe( 1 );
                 expect( b1.isOnce() ).toBe( false );
                 expect( b2.isOnce() ).toBe( false );
@@ -71,36 +71,36 @@ describe('SignalBinding', function () {
 
         it('should remove listener', function () {
             var s = this.signal;
-            var b1 = s.add(function(){
+            var b1 = s.always(function(){
                 expect(null).toEqual('fail: ');
             });
             expect( s.getNumListeners() ).toBe( 1 );
             b1.detach();
             expect( s.getNumListeners() ).toBe( 0 );
-            s.dispatch();
+            s.emit();
         });
 
 
         it('should not throw error if called multiple times', function () {
             var s = this.signal;
-            var b1 = s.add(function(){
+            var b1 = s.always(function(){
                 expect(null).toEqual('fail: ');
             });
             expect( s.getNumListeners() ).toBe( 1 );
             b1.detach();
             expect( s.getNumListeners() ).toBe( 0 );
-            s.dispatch();
+            s.emit();
             b1.detach();
             b1.detach();
             b1.detach();
-            s.dispatch();
+            s.emit();
             expect( s.getNumListeners() ).toBe( 0 );
         });
 
 
         it('should update isBound()', function () {
             var s = this.signal;
-            var b1 = s.add(function(){});
+            var b1 = s.always(function(){});
             expect( s.getNumListeners() ).toBe( 1 );
             expect( b1.isBound() ).toBe( true );
             b1.detach();
@@ -114,7 +114,7 @@ describe('SignalBinding', function () {
         it('should retrieve reference to handler', function () {
             var s = this.signal;
             var l1 = function(){};
-            var b1 = s.add(l1);
+            var b1 = s.always(l1);
             expect( b1.listener ).toBeUndefined(); //make sure it's private
             expect( s.getNumListeners() ).toBe( 1 );
             expect( b1.getListener() ).toBe( l1 );
@@ -143,15 +143,15 @@ describe('SignalBinding', function () {
             var l1 = function(){this.sum()};
             var l2 = function(){this.sum()};
 
-            var b1 = s.add(l1, scope1);
-            var b2 = s.add(l2, scope2);
-            s.dispatch();
+            var b1 = s.always(l1, scope1);
+            var b2 = s.always(l2, scope2);
+            s.emit();
 
             expect( scope1.n ).toBe( 1 );
             expect( scope2.n ).toBe( 1 );
 
             b1.context = scope2;
-            s.dispatch();
+            s.emit();
 
             expect( scope1.n ).toBe( 1 );
             expect( scope2.n ).toBe( 3 );
@@ -164,13 +164,13 @@ describe('SignalBinding', function () {
         it('should curry arguments', function () {
             var s = this.signal;
             var _a, _b, _c;
-            var b1 = s.add(function(a, b, c){
+            var b1 = s.always(function(a, b, c){
                 _a = a;
                 _b = b;
                 _c = c;
             });
             b1.params = ['foo', 'bar'];
-            s.dispatch(123);
+            s.emit(123);
             expect( _a ).toBe( 'foo' );
             expect( _b ).toBe( 'bar' );
             expect( _c ).toBe( 123 );
@@ -182,7 +182,7 @@ describe('SignalBinding', function () {
         it('should return reference to Signal', function () {
             var s = this.signal;
             var _a;
-            var b1 = s.add(function(a){
+            var b1 = s.always(function(a){
                 _a = a;
             });
             expect( b1.getSignal() ).toBe( s );

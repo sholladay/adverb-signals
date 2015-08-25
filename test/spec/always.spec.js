@@ -1,60 +1,60 @@
 var signals = signals || require('../../dist/signals');
 
-describe('Add / Add Once', function () {
+describe('Always / Once', function () {
 
     beforeEach(function(){
         this.signal = new signals.Signal();
     });
 
 
-    describe('Signal.add()', function () {
+    describe('Signal.always()', function () {
 
         it('should increase number of listeners', function () {
             var s = this.signal;
             expect( s.getNumListeners() ).toBe( 0 );
-            s.add(function(){});
+            s.always(function(){});
             expect( s.getNumListeners() ).toBe( 1 );
-            s.add(function(){});
+            s.always(function(){});
             expect( s.getNumListeners() ).toBe( 2 );
         });
 
         it('should not add same listener twice', function () {
             var s = this.signal;
             var l = function(){};
-            s.add(l);
-            s.add(l);
+            s.always(l);
+            s.always(l);
             expect( s.getNumListeners() ).toBe( 1 );
         });
 
         it('should add same listener if diff context', function () {
             var s = this.signal;
             var l = function(){};
-            s.add(l);
-            s.add(l, {});
+            s.always(l);
+            s.always(l, {});
             expect( s.getNumListeners() ).toBe( 2 );
         });
 
         it('should throw error if listener isn\'t a function', function () {
             var s = this.signal;
-            expect( function(){ s.add(); } ).toThrow( 'listener is a required param of add() and should be a Function.' );
-            expect( function(){ s.add(123); } ).toThrow( 'listener is a required param of add() and should be a Function.' );
-            expect( function(){ s.add(true); } ).toThrow( 'listener is a required param of add() and should be a Function.' );
+            expect( function(){ s.always(); } ).toThrow( 'listener is a required param of always() and should be a Function.' );
+            expect( function(){ s.always(123); } ).toThrow( 'listener is a required param of always() and should be a Function.' );
+            expect( function(){ s.always(true); } ).toThrow( 'listener is a required param of always() and should be a Function.' );
             expect( s.getNumListeners() ).toBe( 0 );
         });
 
     });
 
 
-    //--------------------------- Add / Has ---------------------------------//
+    //--------------------------- Always / Runs ---------------------------------//
 
-    describe('Signal.has()', function () {
+    describe('Signal.runs()', function () {
 
-        it('it should check if signal has listener', function () {
+        it('it should check if signal runs listener', function () {
             var s = this.signal;
             var l = function(){};
-            expect( s.has(l) ).toBe( false );
-            s.add(l);
-            expect( s.has(l) ).toBe( true );
+            expect( s.runs(l) ).toBe( false );
+            s.always(l);
+            expect( s.runs(l) ).toBe( true );
         });
 
     });
@@ -62,13 +62,13 @@ describe('Add / Add Once', function () {
 
     //--------------------------- Add Once ---------------------------------//
 
-    describe('Signal.addOnce()', function () {
+    describe('Signal.once()', function () {
 
         it('add listener', function () {
             var s = this.signal;
-            s.addOnce(function(){});
+            s.once(function(){});
             expect( s.getNumListeners() ).toBe( 1 );
-            s.addOnce(function(){});
+            s.once(function(){});
             expect( s.getNumListeners() ).toBe( 2 );
         });
 
@@ -76,16 +76,16 @@ describe('Add / Add Once', function () {
             var s = this.signal;
             var l = function(){};
             expect( s.getNumListeners() ).toBe( 0 );
-            s.addOnce(l);
-            s.addOnce(l);
+            s.once(l);
+            s.once(l);
             expect( s.getNumListeners() ).toBe( 1 );
         });
 
         it('should throw error if listener isn\'t a function', function () {
             var s = this.signal;
-            expect( function(){ s.addOnce(); } ).toThrow( 'listener is a required param of addOnce() and should be a Function.' );
-            expect( function(){ s.addOnce(true); } ).toThrow( 'listener is a required param of addOnce() and should be a Function.' );
-            expect( function(){ s.addOnce(123); } ).toThrow( 'listener is a required param of addOnce() and should be a Function.' );
+            expect( function(){ s.once(); } ).toThrow( 'listener is a required param of once() and should be a Function.' );
+            expect( function(){ s.once(true); } ).toThrow( 'listener is a required param of once() and should be a Function.' );
+            expect( function(){ s.once(123); } ).toThrow( 'listener is a required param of once() and should be a Function.' );
             expect( s.getNumListeners() ).toBe( 0 );
         });
 
@@ -94,24 +94,24 @@ describe('Add / Add Once', function () {
 
     //--------------------------- Add Mixed ---------------------------------//
 
-    describe('Signal.add() + Signal.addOnce()', function () {
+    describe('Signal.always() + Signal.once()', function () {
 
-        it('should throw error if same listener add followed by addOnce', function () {
+        it('should throw error if same listener always followed by once', function () {
             var s = this.signal;
             var l = function(){};
             expect( function(){
-                s.add(l);
-                s.addOnce(l);
-            } ).toThrow( 'You cannot add() then addOnce() the same listener without removing the relationship first.' );
+                s.always(l);
+                s.once(l);
+            } ).toThrow( 'You cannot always() then once() the same listener without removing the relationship first.' );
         });
 
-        it('should throw error if same listener addOnce followed by add', function () {
+        it('should throw error if same listener once followed by always', function () {
             var s = this.signal;
             var l = function(){};
             expect( function(){
-                s.addOnce(l);
-                s.add(l);
-            } ).toThrow( 'You cannot addOnce() then add() the same listener without removing the relationship first.' );
+                s.once(l);
+                s.always(l);
+            } ).toThrow( 'You cannot once() then always() the same listener without removing the relationship first.' );
         });
 
     });

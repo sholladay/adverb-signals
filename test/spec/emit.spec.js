@@ -2,14 +2,14 @@ var signals = signals || require('../../dist/signals');
 
 // ---
 
-describe('Dispatch', function () {
+describe('emit', function () {
 
     beforeEach(function(){
         this.signal = new signals.Signal();
     });
 
 
-    describe('add', function () {
+    describe('always', function () {
 
         it('should execute listeners (FIFO)', function () {
             var s = this.signal;
@@ -18,9 +18,9 @@ describe('Dispatch', function () {
             var l1 = function(){str += 'a'};
             var l2 = function(){str += 'b'};
 
-            s.add(l1);
-            s.add(l2);
-            s.dispatch();
+            s.always(l1);
+            s.always(l2);
+            s.emit();
             expect( str ).toBe( 'ab' );
         });
 
@@ -33,11 +33,11 @@ describe('Dispatch', function () {
             var l2 = function(){str += 'b'};
             var l3 = function(){str += 'c'};
 
-            s.add(l1, null, 1);
-            s.add(l2, null, 12);
-            s.add(l3, null, 2);
-            s.dispatch();
-            //ensure dispatch happened on proper order
+            s.always(l1, null, 1);
+            s.always(l2, null, 12);
+            s.always(l3, null, 2);
+            s.emit();
+            //ensure emit happened on proper order
             expect( str ).toBe( 'bca' );
         });
 
@@ -49,25 +49,25 @@ describe('Dispatch', function () {
             var l2 = function(){str += 'b'};
             var l3 = function(){str += 'c'};
 
-            s.add(l1);
-            s.add(l2, null, 1);
-            s.add(l3);
-            s.dispatch();
+            s.always(l1);
+            s.always(l2, null, 1);
+            s.always(l3);
+            s.emit();
             expect( str ).toBe( 'bac' );
         });
 
 
-        it('should allow multiple dispatches', function () {
+        it('should allow multiple emites', function () {
             var s = this.signal;
             var n = 0;
             var l1 = function(){n++};
-            s.add(l1);
+            s.always(l1);
 
-            s.dispatch();
+            s.emit();
             expect( n ).toBe( 1 );
-            s.dispatch();
+            s.emit();
             expect( n ).toBe( 2 );
-            s.dispatch();
+            s.emit();
             expect( n ).toBe( 3 );
         });
 
@@ -92,14 +92,14 @@ describe('Dispatch', function () {
             var l1 = function(){this.sum()};
             var l2 = function(){this.sum()};
 
-            s.add(l1, scope1);
-            s.add(l2, scope2);
-            s.dispatch();
+            s.always(l1, scope1);
+            s.always(l2, scope2);
+            s.emit();
 
             expect( scope1.n ).toBe( 1 );
             expect( scope2.n ).toBe( 1 );
 
-            s.dispatch();
+            s.emit();
             expect( scope1.n ).toBe( 2 );
             expect( scope2.n ).toBe( 2 );
         });
@@ -108,19 +108,19 @@ describe('Dispatch', function () {
 
 
 
-    describe('addOnce', function () {
+    describe('once', function () {
 
-        it('should execute listener only once even if multiple dispatches', function () {
+        it('should execute listener only once even if multiple emites', function () {
             var s = this.signal;
             var n = 0;
             var k = 0;
             var l1 = function(){n++};
             var l2 = function(){k++};
 
-            s.addOnce(l1);
-            s.addOnce(l2);
-            s.dispatch();
-            s.dispatch();
+            s.once(l1);
+            s.once(l2);
+            s.emit();
+            s.emit();
 
             expect( n ).toBe( 1 );
             expect( k ).toBe( 1 );
@@ -147,14 +147,14 @@ describe('Dispatch', function () {
             var l1 = function(){this.sum()};
             var l2 = function(){this.sum()};
 
-            s.addOnce(l1, scope1);
-            s.addOnce(l2, scope2);
+            s.once(l1, scope1);
+            s.once(l2, scope2);
 
-            s.dispatch();
+            s.emit();
             expect( scope1.n ).toBe( 1 );
             expect( scope2.n ).toBe( 1 );
 
-            s.dispatch();
+            s.emit();
             expect( scope1.n ).toBe( 1 );
             expect( scope2.n ).toBe( 1 );
         });
@@ -172,31 +172,31 @@ describe('Dispatch', function () {
 
                 var n = 0;
                 var l2 = function(){n += 1}
-                var l1 = function(){n += 1; s.remove(l2)}  //test for #24
+                var l1 = function(){n += 1; s.never(l2)}  //test for #24
 
-                s.add(l1);
-                s.add(l2);
-                s.dispatch();
+                s.always(l1);
+                s.always(l2);
+                s.emit();
 
                 expect( n ).toBe( 1 );
             });
         });
 
         describe('issue #47: invalid context', function () {
-            it('should automatically bind Signal.dispatch context to avoid issues', function () {
+            it('should automatically bind Signal.emit context to avoid issues', function () {
                 var s = this.signal;
 
                 var n = 0;
                 var args;
                 var l1 = function(){n++; args = Array.prototype.slice.call(arguments);};
 
-                s.add(l1);
-                s.dispatch.call(null); // test #47
+                s.always(l1);
+                s.emit.call(null); // test #47
 
                 expect( n ).toBe( 1 );
                 expect( args ).toEqual( [] );
 
-                s.dispatch.call(null, 4, 5);
+                s.emit.call(null, 4, 5);
                 expect( n ).toBe( 2 );
                 expect( args ).toEqual( [4, 5] );
             });
@@ -206,63 +206,63 @@ describe('Dispatch', function () {
 
 
 
-    //--------------------- Dispatch with arguments ----------------------//
+    //--------------------- emit with arguments ----------------------//
 
 
     describe('arguments', function () {
 
-        describe('add', function () {
+        describe('always', function () {
 
             it('should propagate single argument', function () {
                 var s = this.signal;
                 var n = 0;
                 var l1 = function(param){n += param};
                 var l2 = function(param){n += param};
-                s.add(l1);
-                s.add(l2);
-                s.dispatch(1);
+                s.always(l1);
+                s.always(l2);
+                s.emit(1);
                 expect( n ).toBe( 2 );
             });
 
             it('should propagate [n] arguments', function () {
                 var s = this.signal;
                 var args;
-                s.add(function(){
+                s.always(function(){
                     args = Array.prototype.slice.call(arguments);
                 });
-                s.dispatch(1,2,3,4,5);
+                s.emit(1,2,3,4,5);
                 expect( args ).toEqual( [1,2,3,4,5] );
-                s.dispatch(9,8);
+                s.emit(9,8);
                 expect( args ).toEqual( [9,8] );
             });
 
         });
 
 
-        describe('addOnce', function () {
+        describe('once', function () {
 
             it('should propagate single argument', function () {
                 var s = this.signal;
                 var n = 0;
                 var l1 = function(param){n += param};
                 var l2 = function(param){n += param};
-                s.addOnce(l1);
-                s.addOnce(l2);
-                s.dispatch(1);
+                s.once(l1);
+                s.once(l2);
+                s.emit(1);
                 expect( n ).toBe( 2 );
-                s.dispatch(20);
+                s.emit(20);
                 expect( n ).toBe( 2 );
             });
 
             it('should propagate [n] arguments', function () {
                 var s = this.signal;
                 var args;
-                s.addOnce(function(){
+                s.once(function(){
                     args = Array.prototype.slice.call(arguments);
                 });
-                s.dispatch(1,2,3,4,5);
+                s.emit(1,2,3,4,5);
                 expect( args ).toEqual( [1,2,3,4,5] );
-                s.dispatch(9,8);
+                s.emit(9,8);
                 expect( args ).toEqual( [1,2,3,4,5] );
             });
 
@@ -283,10 +283,10 @@ describe('Dispatch', function () {
             var l2 = function(){return false};
             var l3 = function(){n++};
 
-            s.add(l1);
-            s.add(l2);
-            s.add(l3);
-            s.dispatch();
+            s.always(l1);
+            s.always(l2);
+            s.always(l3);
+            s.emit();
 
             expect( n ).toBe( 1 );
         });
@@ -300,16 +300,16 @@ describe('Dispatch', function () {
             var l2 = function(){s.halt()};
             var l3 = function(){n++};
 
-            s.add(l1);
-            s.add(l2);
-            s.add(l3);
-            s.dispatch();
+            s.always(l1);
+            s.always(l2);
+            s.always(l3);
+            s.emit();
 
             expect( n ).toBe( 1 );
         });
 
 
-        it('should not stop propagation if halt() was called before the dispatch', function () {
+        it('should not stop propagation if halt() was called before the emit', function () {
             var s = this.signal;
 
             var n = 0;
@@ -317,18 +317,18 @@ describe('Dispatch', function () {
             var l2 = function(){n++};
             var l3 = function(){n++};
 
-            s.add(l1);
-            s.add(l2);
-            s.add(l3);
+            s.always(l1);
+            s.always(l2);
+            s.always(l3);
 
             s.halt();
-            s.dispatch();
+            s.emit();
 
             expect( n ).toBe( 3 );
         });
 
 
-        it('should not stop propagation if halt() was called on a previous dispatch', function () {
+        it('should not stop propagation if halt() was called on a previous emit', function () {
             var s = this.signal;
 
             var n = 0;
@@ -336,14 +336,14 @@ describe('Dispatch', function () {
             var l2 = function(){n++; if (n < 3) { s.halt(); }};
             var l3 = function(){n++};
 
-            s.add(l1);
-            s.add(l2);
-            s.add(l3);
+            s.always(l1);
+            s.always(l2);
+            s.always(l3);
 
-            s.dispatch();
+            s.emit();
             expect( n ).toBe( 2 );
 
-            s.dispatch();
+            s.emit();
             expect( n ).toBe( 5 );
         });
 
@@ -355,7 +355,7 @@ describe('Dispatch', function () {
     describe('enable/disable', function () {
 
 
-        it('should enable/disable signal dispatch', function () {
+        it('should enable/disable signal emit', function () {
             var s = this.signal;
 
             var n = 0;
@@ -363,20 +363,20 @@ describe('Dispatch', function () {
             var l2 = function(){n++};
             var l3 = function(){n++};
 
-            s.add(l1);
-            s.add(l2);
-            s.add(l3);
+            s.always(l1);
+            s.always(l2);
+            s.always(l3);
 
             expect( s.active ).toBe( true );
-            s.dispatch();
+            s.emit();
 
             s.active = false;
             expect( s.active ).toBe( false );
-            s.dispatch();
+            s.emit();
 
             s.active = true;
             expect( s.active ).toBe( true );
-            s.dispatch();
+            s.emit();
 
             expect( n ).toBe( 6 );
         });
@@ -390,23 +390,23 @@ describe('Dispatch', function () {
             var l2 = function(){n++};
             var l3 = function(){n++};
 
-            var b1 = s.add(l1);
-            var b2 = s.add(l2);
-            var b3 = s.add(l3);
+            var b1 = s.always(l1);
+            var b2 = s.always(l2);
+            var b3 = s.always(l3);
 
             expect( s.active ).toBe( true );
             expect( b2.active ).toBe( true );
-            s.dispatch();
+            s.emit();
 
             b2.active = false;
             expect( s.active ).toBe( true );
             expect( b2.active ).toBe( false );
-            s.dispatch();
+            s.emit();
 
             b2.active = true;
             expect( s.active ).toBe( true );
             expect( b2.active ).toBe( true );
-            s.dispatch();
+            s.emit();
 
             expect( n ).toBe( 8 );
         });
